@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const Signup = () => {
@@ -19,24 +19,69 @@ const Signup = () => {
     setFormData({ ...formdata, [e.target.name]: e.target.value });
   };
 
+  const validatePassword = (password) => {
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
+    return passwordRegex.test(password);
+  };
+
+  const checkEmailExists = async (email) => {
+    try {
+      const res = await axios.post(
+        "http://localhost:8000/api/v1/auth/check-email/",
+        { email }
+      );
+      return res.data.exists;
+    } catch (error) {
+      console.error("Error checking email:", error);
+      return false;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { email, first_name, last_name, password, password2 } = formdata;
+
+    // Validate required fields
     if (!email || !first_name || !last_name || !password || !password2) {
-      setError("Please fill all the fields");
+      toast.error("Please fill all the fields");
       return;
-    } else {
-      console.log(formdata);
+    }
+
+    // Validate password strength
+    if (!validatePassword(password)) {
+      toast.error(
+        "Password must be at least 8 characters long, and include uppercase, lowercase, number, and special character."
+      );
+      return;
+    }
+
+    // Check if passwords match
+    if (password !== password2) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    // Check if email is already used
+    const emailExists = await checkEmailExists(email);
+    if (emailExists) {
+      toast.error("Email is already registered");
+      return;
+    }
+
+    try {
       const res = await axios.post(
         "http://localhost:8000/api/v1/auth/register/",
         formdata
       );
       const response = res.data;
-      console.log(response);
       if (res.status === 201) {
-        navigate("/otp/verify");
         toast.success(response.message);
+        navigate("/otp/verify");
       }
+    } catch (err) {
+      toast.error("Failed to register. Please try again.");
+      console.error(err);
     }
   };
 
@@ -45,13 +90,12 @@ const Signup = () => {
     <div>
       <div className="form-container">
         <div style={{ width: "30%" }} className="wrapper">
-          <h2>Create Account</h2>
-
           <form onSubmit={handleSubmit}>
-            <p style={{ color: "red", padding: "1px" }}>{error ? error : ""}</p>
+            <p style={{ color: "red", padding: "1px" }}>{error}</p>
             <div className="form-group">
-              <label htmlFor="email">Email address</label>
+              <h4>Sign Up</h4>
               <input
+                placeholder="Email"
                 type="text"
                 className="email-form"
                 name="email"
@@ -60,8 +104,8 @@ const Signup = () => {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="first_name">First Name</label>
               <input
+                placeholder="First Name"
                 type="text"
                 className="email-form"
                 name="first_name"
@@ -70,8 +114,8 @@ const Signup = () => {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="last_name">Last Name</label>
               <input
+                placeholder="Last Name"
                 type="text"
                 className="email-form"
                 name="last_name"
@@ -80,8 +124,8 @@ const Signup = () => {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="password">Password</label>
               <input
+                placeholder="Password"
                 type="password"
                 className="email-form"
                 name="password"
@@ -90,8 +134,8 @@ const Signup = () => {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="password2">Confirm Password</label>
               <input
+                placeholder="Confirm Password"
                 type="password"
                 className="email-form"
                 name="password2"
@@ -99,7 +143,10 @@ const Signup = () => {
                 onChange={handleOnChange}
               />
             </div>
-            <input type="submit" value="Submit" className="submitButton" />
+            <input type="submit" value="Register" className="submitButton" />
+            <p1 className="pass-link">
+              Already have an account? <Link to={"/login"}>Login here</Link>
+            </p1>
           </form>
         </div>
       </div>

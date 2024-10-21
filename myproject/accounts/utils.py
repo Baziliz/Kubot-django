@@ -19,18 +19,16 @@ def send_code_to_user(email):
     
     email_body = format_html(
         '''
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
-            <h2 style="color: #333; text-align: center;">One Time Passcode (OTP) Verification</h2>
-            <p style="color: #555; text-align: center;">Hi <strong>{first_name}</strong>,</p>
-            <p style="color: #555; text-align: center;">Thanks for signing up at <a href="https://{current_site}" style="color: #0066cc; text-decoration: none;">{current_site}</a>. Please verify your email by entering the following one-time passcode (OTP):</p>
-            <div style="font-size: 24px; font-weight: bold; color: #333; text-align: center; margin: 20px 0; border: 1px solid #ccc; border-radius: 5px; padding: 10px; background-color: #fff;">
-                {otp_code}
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
+                <h2 style="color: #333; text-align: center;">OTP Verification</h2>
+                <p style="color: #555; text-align: center;">Hi <strong>{first_name}</strong>,</p>
+                <p style="color: #555; text-align: center;">Enter this OTP to verify your email:</p>
+                <div style="font-size: 24px; font-weight: bold; color: #333; text-align: center; margin: 20px 0;">
+                    {otp_code}
+                </div>
+                <p style="color: #555; text-align: center;">If you didn't request this, please ignore.</p>
+                <p style="color: #555; text-align: center;">Regards,<br>KU-Bot Team</p>
             </div>
-            <p style="color: #555; text-align: center;">If you did not sign up for an account, you can ignore this email.</p>
-            <p style="color: #555; text-align: center;">Best regards,<br>The KU-Bot Team</p>
-            <hr style="border-top: 1px solid #eee; margin: 20px 0;">
-            <p style="font-size: 12px; color: #999; text-align: center;">This is an automated message, please do not reply.</p>
-        </div>
         ''',
         first_name=user.first_name,
         current_site=current_site,

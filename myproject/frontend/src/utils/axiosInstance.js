@@ -1,37 +1,37 @@
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from "jwt-decode"; // นำเข้า jwtDecode แบบ named import
 import dayjs from "dayjs";
 import Cookies from "js-cookie";
-
-const token = Cookies.get("access") ? Cookies.get("access") : "";
-const refresh_token = Cookies.get("refresh") ? Cookies.get("refresh") : "";
 
 const baseUrl = "http://localhost:8000/api/v1";
 const axiosInstance = axios.create({
   baseURL: baseUrl,
   "Content-type": "application/json",
-  headers: {
-    Authorization: token ? `Bearer ${token}` : null,
-  },
 });
 
 axiosInstance.interceptors.request.use(async (req) => {
+  let token = Cookies.get("access");
+  let refresh_token = Cookies.get("refresh");
+
   if (token) {
     req.headers.Authorization = `Bearer ${token}`;
-    const user = jwtDecode(token);
+    const user = jwtDecode(token); // ใช้ jwtDecode ที่นำเข้าแบบ named import
     const isExpired = dayjs.unix(user.exp).diff(dayjs()) < 1;
-    if (!isExpired) {
-      return req;
-    } else {
+
+    if (isExpired) {
       try {
+        // ใช้ refresh token เพื่อดึง access token ใหม่
         const res = await axios.post(`${baseUrl}/auth/token/refresh/`, {
           refresh: refresh_token,
         });
+
         if (res.status === 200) {
+          // เก็บ access token ใหม่ใน cookies และอัพเดท header
           Cookies.set("access", res.data.access);
-          req.headers.Authorization = `Bearer ${res.data.access}`;
-          return req;
+          token = res.data.access; // อัพเดท token ใหม่
+          req.headers.Authorization = `Bearer ${token}`;
         } else {
+          // ถ้า refresh token ไม่ถูกต้องให้ทำการ logout
           const logoutRes = await axios.post(`${baseUrl}/auth/logout/`, {
             refresh_token: refresh_token,
           });
@@ -46,6 +46,7 @@ axiosInstance.interceptors.request.use(async (req) => {
       }
     }
   }
+
   return req;
 });
 
