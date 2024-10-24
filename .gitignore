@@ -25,4 +25,9 @@ dist-ssr
 
 myenv/
 
+# Ignore .env files
+*.env
+.env
+
+
 

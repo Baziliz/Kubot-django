@@ -10,136 +10,67 @@ from django.urls import reverse
 from .utils import send_normal_email
 from rest_framework_simplejwt.tokens import RefreshToken, Token
 from pymyku import Client, requests
+from datetime import datetime
+
 import json
 import pymyku
+import requests as req_lib  # ใช้สำหรับจัดการ exceptions
 
 
-class RegisterAndLoginStudentSerializer(serializers.Serializer):
+class DiscordConnectSerializer(serializers.Serializer):
+    code = serializers.CharField(max_length=255, required=True)
+
+    def validate_code(self, value):
+        if not value:
+            raise serializers.ValidationError("Authorization code is required")
+        return value
+
+
+class LoginWithMykuSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=255)
-    password = serializers.CharField(max_length=255, write_only=True)
-    access_token = serializers.CharField(max_length=255, read_only=True)
-    refresh_token = serializers.CharField(max_length=255, read_only=True)
-    student_code = serializers.CharField(max_length=255, read_only=True)
-    first_name_th = serializers.CharField(max_length=255, read_only=True)
-    last_name_th = serializers.CharField(max_length=255, read_only=True)
-    schedule = serializers.JSONField(read_only=True)
-    group_course = serializers.JSONField(read_only=True)
-
-    class Meta:
-        fields = ['username', 'password', 'access_token', 'refresh_token', 'student_code', 'first_name_th', 'last_name_th', 'schedule', 'group_course']
+    password = serializers.CharField(max_length=128, write_only=True)
 
     def validate(self, attrs):
         username = attrs.get('username')
         password = attrs.get('password')
 
-        print("Received username:", username)  # Debug print
-        print("Received password:", password)  # Debug print
-
         try:
-            # Perform login and get response object
-            response = pymyku.requests.login(username, password)
-            print("Login response: ///666//", response)
-            response_data = response.json()  # Convert response to JSON
-            print("Response data: ", json.dumps(response_data, indent=4, ensure_ascii=False))  # Debug print
+            # สร้าง Client และล็อกอิน
+            client = Client(username=username, password=password)
+            client.login()
 
-            # Check if the response is successful
-            if response.status_code != 200:
-                raise ValidationError("Login failed with status code: {}".format(response.status_code))
+            # ดึงข้อมูลนักศึกษาหลักทั้งหมด
+            student_data = client.fetch_student_personal()
+            schedule_data = client.fetch_schedule()
+            announce_data = client.fetch_announce()
+            grades_data = client.fetch_grades()
+            group_course_data = client.fetch_group_course()
+            student_education_data = client.fetch_student_education()
+            gpax_data = client.fetch_gpax()
 
-            # Extract tokens and other necessary fields from the response
-            access_token = response_data.get('accesstoken')
-            refresh_token = response_data.get('renewtoken')
-            user_data = response_data.get('user', {})
-            student_data = user_data.get('student', {})
+            # การตรวจสอบรูปแบบของข้อมูล เช่น birthDate
+            birth_date_str = student_data.get('results', {}).get('stdPersonalModel', {}).get('birthDate', None)
+            if birth_date_str:
+                try:
+                    # แปลงจาก ISO format เป็น YYYY-MM-DD
+                    birth_date = datetime.strptime(birth_date_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+                    student_data['results']['stdPersonalModel']['birthDate'] = birth_date.strftime("%Y-%m-%d")
+                except ValueError:
+                    raise serializers.ValidationError("Invalid date format. Expected 'YYYY-MM-DD' or similar.")
 
-            student_code = user_data.get('idCode')
-            first_name_th = user_data.get('firstNameTh')
-            last_name_th = user_data.get('lastNameTh')
-            user_type = user_data.get('userType')
-            campus_code = student_data.get('campusCode')
-            faculty_code = student_data.get('facultyCode')
-            major_code = student_data.get('majorCode')
-            student_status_code = student_data.get('studentStatusCode')
-
-            if not access_token or not refresh_token:
-                raise ValidationError("Failed to retrieve tokens from login response.")
-
-            # Fetch the schedule using pymyku
-            schedule_response = pymyku.requests.get_schedule(
-                access_token=access_token,
-                user_type=user_type,
-                campus_code=campus_code,
-                faculty_code=faculty_code,
-                major_code=major_code,
-                student_status_code=student_status_code,
-                login_response=response_data
-            )
-
-            if schedule_response.status_code != 200:
-                raise ValidationError("Failed to retrieve schedule with status code: {}".format(schedule_response.status_code))
-
-            schedule_data = schedule_response.json()
-            print("Schedule data: ", json.dumps(schedule_data, indent=4, ensure_ascii=False))  # Debug print
-
-            std_id = student_data.get('stdId')
-            academic_year = schedule_data.get('academicYr'),
-            semester = schedule_data.get('semester'),
-            
-            group_course_response = pymyku.requests.get_group_course(
-                access_token=access_token,
-                std_id=std_id,
-                academic_year=academic_year,
-                semester=semester,
-                login_response=response_data,
-                schedule_response=schedule_response
-            )
-
-            if group_course_response.status_code != 200:
-                raise ValidationError("Failed to retrieve group course with status code: {}".format(group_course_response.status_code))
-
-            group_course_data = group_course_response.json()
-            print("Courses data: ", json.dumps(group_course_data, indent=4, ensure_ascii=False))  # Debug print
-            
-            attrs['access_token'] = access_token
-            attrs['refresh_token'] = refresh_token
-            attrs['student_code'] = student_code
-            attrs['first_name_th'] = first_name_th
-            attrs['last_name_th'] = last_name_th
-            attrs['schedule'] = schedule_data
-            attrs['group_course'] = group_course_data
+            # เก็บข้อมูลทั้งหมดใน attrs เพื่อใช้ใน View
+            attrs['student_data'] = student_data
+            attrs['schedule_data'] = schedule_data
+            attrs['announce_data'] = announce_data
+            attrs['grades_data'] = grades_data
+            attrs['group_course_data'] = group_course_data
+            attrs['student_education_data'] = student_education_data
+            attrs['gpax_data'] = gpax_data
 
         except Exception as e:
-            print("Exception during validation:", str(e))  # Debug print
-            raise ValidationError({'error': str(e)})
+            raise serializers.ValidationError(f"Failed to log in to MyKU: {str(e)}")
 
         return attrs
-
-    def create(self, validated_data):
-        username = validated_data['username']
-        password = validated_data['password']
-        access_token = validated_data['access_token']
-        refresh_token = validated_data['refresh_token']
-        student_code = validated_data['student_code']
-        first_name_th = validated_data['first_name_th']
-        last_name_th = validated_data['last_name_th']
-        schedule = validated_data['schedule']
-
-        # Logic to create or update user in the database
-        user, created = User.objects.get_or_create(
-            email=username,
-            defaults={
-                'first_name': 'First',  # Replace with actual data if available
-                'last_name': 'Last',
-                'is_active': True,
-                'is_verified': True,
-            }
-        )
-        user.set_password(password)
-        user.save()
-
-        return validated_data
-
-
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=68, min_length=6, write_only=True)
@@ -166,6 +97,13 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
         )
         return user
+    
+class VerifyOtpSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.CharField(max_length=6)
+    
+class EmailSerializer(serializers.Serializer):
+    email = serializers.EmailField()
 
 class LoginUserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=255, min_length=6)
@@ -176,26 +114,30 @@ class LoginUserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['email','password','full_name','access_token','refresh_token']
+        fields = ['email', 'password', 'full_name', 'access_token', 'refresh_token']
         
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
         request = self.context.get('request')
+
+        # ตรวจสอบข้อมูลล็อกอิน
         user = authenticate(request, email=email, password=password)
         if not user:
-            raise AuthenticationFailed("invalid credentials try again")
+            raise AuthenticationFailed("Invalid credentials, try again.")
         if not user.is_verified:
-            raise AuthenticationFailed("Email is not verified")
-        user_tokens=user.tokens()
-            
-        
+            raise AuthenticationFailed("Email is not verified.")
+
+        # ดึง JWT tokens จาก user
+        user_tokens = user.tokens()
+
+        # คืนค่าข้อมูล
         return {
-        'email': user.email,
-        'full_name': user.get_full_name,
-        'access_token': str(user_tokens.get('access')),
-        'refresh_token': str(user_tokens.get('refresh'))
-    }
+            'email': user.email,
+            'full_name': user.get_full_name,
+            'access_token': str(user_tokens.get('access')),
+            'refresh_token': str(user_tokens.get('refresh'))
+        }
 
 class PasswordResetRequestSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=255)

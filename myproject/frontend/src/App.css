@@ -17,6 +17,7 @@
   justify-content: center;
   padding: 20px auto;
 }
+
 .wrapper {
   margin-top: 2rem;
   max-width: 600px;
@@ -34,19 +35,35 @@ form {
   margin-right: auto;
   margin-left: auto;
   max-width: 600px;
-  width: 60%;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
+  width: 80%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+  justify-content: center;
+}
+
+h4 {
+  font-size: 2em;
+  color: #2c2c2c;
+  text-align: center;
+  font-family: "Poppins", sans-serif;
+  font-weight: 800;
+  font-style: normal;
 }
 
 .form-group {
   width: 100%;
   margin-bottom: 10px;
 }
+
+::placeholder {
+  font-family: "Poppins", sans-serif;
+}
+
 h2 {
   border-bottom: 1px solid white;
-  color: #3d3d3d;
+  color: #000;
   font-family: sans-serif;
   font-size: 34px;
   font-weight: 600;
@@ -54,6 +71,7 @@ h2 {
   padding: 8px;
   text-align: center;
 }
+
 .container {
   width: 100%;
   display: flex;
@@ -68,32 +86,84 @@ input {
   border: 1px solid #d9d9d9;
   border-radius: 4px;
   box-sizing: border-box;
-  padding: 12px;
+  padding: 16px;
   width: 100%;
   outline: none;
+  margin-top: 0.5rem;
 }
+
 input:focus {
   border-color: #3d3d3d;
   border-width: 1px;
 }
 
 label {
-  color: #3d3d3d;
+  color: #000;
   display: block;
-  font-family: sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 5px;
 }
+
 .submitButton {
+  font-family: "Poppins", sans-serif;
   background-color: #0a6765;
   color: #ebeefd;
   font-family: sans-serif;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 18px;
   margin: 20px 0px;
+  border-radius: 6px;
+  border: none;
   cursor: pointer;
   transition: box-shadow 200ms ease-in-out, transform 200ms ease-in-out;
+}
+
+.submitButton:hover {
+  transform: scale(1.05);
+}
+
+.loginmyku-btn {
+  padding: 10px 22px;
+  outline: none;
+  width: 350spx;
+  height: 50px;
+  font-size: 20px;
+  font-weight: bold;
+  background-color: #0a6765;
+  margin: 1rem;
+  border: none;
+  color: #ebeefd;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  transition: box-shadow 200ms ease-in-out, transform 200ms ease-in-out;
+}
+
+.loginmyku-btn:hover {
+  transform: scale(1.05);
+}
+
+.logindiscord-btn {
+  padding: 10px 22px;
+  outline: none;
+  width: 350spx;
+  height: 50px;
+  font-size: 20px;
+  font-weight: bold;
+  background-color: #5865f2;
+  margin: 1rem;
+  border: none;
+  color: #ebeefd;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  transition: box-shadow 200ms ease-in-out, transform 200ms ease-in-out;
+}
+
+.logindiscord-btn:hover {
+  transform: scale(1.05);
 }
 
 .vbtn {
@@ -104,36 +174,20 @@ label {
   background-color: #0a6765;
   border: none;
   color: #ebeefd;
-  border-radius: 5px;
+  border-radius: 6px;
+  border: none;
   cursor: pointer;
   transition: box-shadow 200ms ease-in-out, transform 200ms ease-in-out;
+}
+
+.vbtn:hover {
+  transform: scale(1.05);
 }
 
 h3 {
   font-family: "Rubik", sans-serif;
   font-size: 48px;
   color: #2c2c2c;
-}
-
-.logout-btn {
-  padding: 10px 22px;
-  outline: none;
-  width: 120px;
-  height: 50px;
-  font-size: 20px;
-  font-weight: bold;
-  background-color: #e7461e;
-  margin: 1rem;
-  border: none;
-  color: #ebeefd;
-  border-radius: 10px;
-  cursor: pointer;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-  transition: box-shadow 200ms ease-in-out, transform 200ms ease-in-out;
-}
-
-.logout-btn:hover {
-  transform: scale(1.05);
 }
 
 h2,
@@ -164,10 +218,11 @@ h1 {
 }
 
 p {
-  font-size: 20px;
-  font-weight: 300;
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  font-style: normal;
   color: #2c2c2c;
-  font-family: "Roboto Mono", monospace;
   text-transform: none;
 }
 
@@ -204,4 +259,254 @@ footer {
 
 .schedule-item p {
   margin: 5px 0;
+}
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 90%;
+  padding: 20px 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 99;
+}
+
+.logo {
+  font-size: 2em;
+  color: #0a6765;
+  font-family: "Poppins", sans-serif;
+}
+
+.navigation .logout-btn {
+  padding: 10px 22px;
+  outline: none;
+  width: 140px;
+  height: 50px;
+  font-size: 20px;
+  font-weight: bold;
+  background-color: #ff2400;
+  margin: 1rem;
+  border: none;
+  color: #ebeefd;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  transition: box-shadow 200ms ease-in-out, transform 200ms ease-in-out;
+}
+
+.navigation .logout-btn:hover {
+  transform: scale(1.05);
+}
+
+body {
+  margin: auto;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow: auto;
+  background: linear-gradient(
+    315deg,
+    rgb(70, 133, 133) 38%,
+    rgb(80, 180, 152) 68%,
+    rgb(156, 219, 166) 98%
+  );
+  animation: gradient 15s ease infinite;
+  background-size: 400% 400%;
+  background-attachment: fixed;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 0%;
+  }
+
+  50% {
+    background-position: 100% 100%;
+  }
+
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+.wave {
+  background: rgb(255 255 255 / 50%);
+  border-radius: 1000% 1000% 0 0;
+  position: fixed;
+  width: 200%;
+  height: 12em;
+  animation: wave 10s -3s linear infinite;
+  transform: translate3d(0, 0, 0);
+  opacity: 0.8;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+}
+
+.wave:nth-of-type(2) {
+  bottom: -1.25em;
+  animation: wave 18s linear reverse infinite;
+  opacity: 0.8;
+}
+
+.wave:nth-of-type(3) {
+  bottom: -2.5em;
+  animation: wave 20s -1s reverse infinite;
+  opacity: 0.9;
+}
+
+@keyframes wave {
+  2% {
+    transform: translateX(1);
+  }
+
+  25% {
+    transform: translateX(-25%);
+  }
+
+  50% {
+    transform: translateX(-50%);
+  }
+
+  75% {
+    transform: translateX(-25%);
+  }
+
+  100% {
+    transform: translateX(1);
+  }
+}
+
+.profile-card {
+  padding: 22px;
+  margin-top: 10px;
+  margin-bottom: 1rem;
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 400px;
+  width: 80%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 5%;
+  margin-right: 60px;
+  margin-top: 3px;
+  margin-bottom: 20px;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.profile-content p {
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+  font-family: "Poppins", sans-serif;
+  margin: 10px 0;
+}
+
+.navigations .logout-btn {
+  padding: 10px 22px;
+  outline: none;
+  width: 120px;
+  height: 50px;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: #ff2400;
+  margin-top: 2px;
+  border: none;
+  color: #ebeefd;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  transition: box-shadow 200ms ease-in-out, transform 200ms ease-in-out;
+}
+
+.navigations .logout-btn:hover {
+  transform: scale(1.05);
+}
+
+.profile-cards {
+  padding: 50px;
+  margin-top: 180px;
+  margin-bottom: 1rem;
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 850px;
+  width: 100%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+  flex-direction: column;
+}
+
+.personal-info strong {
+  color: #2c2c2c;
+}
+
+.logout-btn {
+  padding: 10px 22px;
+  outline: none;
+  width: 140px;
+  height: 50px;
+  font-size: 20px;
+  font-weight: bold;
+  background-color: #ff2400;
+  margin: 1rem;
+  border: none;
+  color: #ebeefd;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  transition: box-shadow 200ms ease-in-out, transform 200ms ease-in-out;
+}
+
+.logout-btn:hover {
+  transform: scale(1.05);
+}
+
+h5 {
+  font-size: 1.5em;
+  color: #2c2c2c;
+  font-family: "Poppins", sans-serif;
+  font-weight: 800;
+  font-style: normal;
+}
+
+h6 {
+  font-size: 1.6em;
+  color: #2c2c2c;
+  text-align: center;
+  font-family: "Poppins", sans-serif;
+  font-weight: 800;
+  font-style: normal;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.resend-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #ebeefd;
+  border: none;
+  border-radius: 5px;
+  color: #2c2c2c;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: box-shadow 200ms ease-in-out, transform 200ms ease-in-out;
+}
+
+.resend-button:hover {
+  transform: scale(1.05);
 }

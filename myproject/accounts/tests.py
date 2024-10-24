@@ -5,5 +5,5 @@ from django.test import TestCase
 #   -H "Content-Type: application/json" \
 #   -d '{
 #         "username": "b6421604773",
-#         "password": "@Ball0988268931"
+#         "password": ""
 #       }'
