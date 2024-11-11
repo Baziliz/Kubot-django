@@ -1,0 +1,15 @@
+{
+  "hash": "d756c7ce",
+  "configHash": "46572744",
+  "lockfileHash": "cacdc902",
+  "browserHash": "2e8fa441",
+  "optimized": {
+    "js-cookie": {
+      "src": "../../../node_modules/js-cookie/dist/js.cookie.mjs",
+      "file": "js-cookie.js",
+      "fileHash": "89f24428",
+      "needsInterop": false
+    }
+  },
+  "chunks": {}
+}
